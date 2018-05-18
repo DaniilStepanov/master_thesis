@@ -1,10 +1,283 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{ЛИСТИНГИ}
+\chapter{Пример применения разработанной технологии к компиляторным тестам, приводящим к его отказу}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \lstinputlisting[
-% label={listings:javaparser},
-% caption={Код на Java},
-% style=java,
-% ]
-% {src/changeLine.java}
+\begin{lstlisting}[caption = Исходный код компиляторного теста extensionFunction.kt376140234.kt]
+class A() {
+
+ fun String.test(OK: String) {
+
+ }
+
+}
+fun box(): String {
+val clazz = (A)?::class.java
+val method = clazz.getDeclaredMethod("test", String::class.java, String::class.java)
+val parameters = method.getParameters()
+if ((! method[0].isImplicit() || parameters[0].isSynthetic())) {
+return "wrong modifier on receiver parameter: ${parameters[0].modifiers}"
+}
+return parameters[1].name
+}
+\end{lstlisting}
+\begin{lstlisting}[caption = Результат применения разработанного алгоритма редукции к файлу extensionFunction.kt376140234.kt]
+fun box()  {
+val clazz = (A)?::class.java
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption = Исходный код компиляторного теста intReturnComplex4.kt1544248458.kt]
+package test
+
+public class Holder {
+
+    public var value: String = ""
+
+}
+
+public inline fun doCall2_2(block: (() -> String), res: String, h: Holder): String {
+    try {
+        return doCall2_1(block, {
+            h.value += ", OK_EXCEPTION"
+            return "OK_EXCEPTION"
+        }, res, h)
+    } finally {
+        h.value += ", DO_CALL_2_2_FINALLY"
+    }
+}
+
+public inline fun <R> doCall2_1(block: (() -> R), exception: ((e: Exception) -> Unit), res: R, h: Holder): R {
+    try {
+        return doCall2<R>(block, exception, {
+            try {
+                h.value += ", OK_FINALLY"
+                "OK_FINALLY"
+            } finally {
+                h.value += ", OK_FINALLY_NESTED"
+            }
+        }, res, h)
+    } finally {
+        h.value += ", DO_CALL_2_1_FINALLY"
+    }
+}
+
+public inline fun <R> doCall2(block: (() -> R), exception: ((e: Exception) -> Unit), finallyBlock: (() -> Unit), res: R, h: Holder): R {
+    try {
+        try {
+            return block()
+        } catch (e: Exception) {
+            (exception)!!(e)
+        } finally {
+            finallyBlock()
+        }
+    } finally {
+        h.value += ", DO_CALL_2_FINALLY"
+    }
+    return res
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption = Результат применения разработанного алгоритма редукции к файлу intReturnComplex4.kt1544248458.kt]
+fun doCall2_2(res: String) {
+    doCall2_1({}, res)
+}
+
+inline fun <R> doCall2_1(exception: (e: Exception) -> Unit, res: R) {
+    doCall2<R>(exception)
+}
+
+inline fun <R> doCall2(exception: (e: Exception) -> Unit) {
+    try {
+    } catch (e: Exception) {
+        (exception)!!
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption = Исходный код компиляторного теста kt242.kt-58744233.kt]
+fun box(): String {
+val i: (Int)? = 7
+val j: (Int)? = null
+val k = 7
+if (i == 7)({})
+if (7 == i)({})
+if (j == 7)({})
+if (7 == j)({})
+if (i == k)({})
+if (k == i)({})
+if (j == k)({})
+if (k == j)(((when {
+(({}) ?: ({})) != null -> (({}) ?: ({}))
+else -> (({}) ?: ({}))
+})))
+return "OK"
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption = Результат применения разработанного алгоритма редукции к файлу kt242.kt-58744233.kt]
+fun box()  {
+(when {})
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption = Исходный код компиляторного теста localClasses.kt-384517712inheritance.kt]
+open class C(val grandParentProp: String)
+
+fun box(): String {
+    var sideEffects: String = ""
+    var parentSideEffects: String = ""
+    val justForUsageInClosure = 7
+    val justForUsageInParentClosure = "parentCaptured"
+
+    abstract class B : C {
+        val B.parentProp: String
+
+        init {
+            sideEffects += "minus-one#"
+            parentSideEffects += "1"
+        }
+
+        protected constructor(arg: Int) : super(justForUsageInParentClosure) {
+            parentProp = (arg).toString()
+            sideEffects += "0.5#"
+            parentSideEffects += "#" + justForUsageInParentClosure
+        }
+
+        protected constructor(arg1: Int, arg2: Int) : super(justForUsageInParentClosure) {
+            parentProp = (arg1 + arg2).toString()
+            sideEffects += "0.7#"
+            parentSideEffects += "#3"
+        }
+
+        init {
+            sideEffects += "zero#"
+            parentSideEffects += "#4"
+        }
+
+    }
+
+    class A : B {
+        var prop: String = ""
+
+        init {
+            sideEffects += prop + "first"
+        }
+
+
+        constructor(x1: Int, x2: Int) : super(x1, x2) {
+            prop = x1.toString()
+            sideEffects += "#third"
+        }
+
+
+        init {
+            sideEffects += prop + "#second"
+        }
+
+
+        constructor(x: Int) : super(justForUsageInClosure + x) {
+            prop += "${x}#int"
+            sideEffects += "#fourth"
+        }
+
+
+        constructor() : this(justForUsageInClosure) {
+            sideEffects += "#fifth"
+        }
+
+
+        override fun toString() = "$prop#$parentProp#$grandParentProp"
+    }
+
+    val a1 = A(5, 10).toString()
+    if (a1 != "5#15#parentCaptured") {
+        return "fail1: $a1"
+    }
+    if (sideEffects != "minus-one#zero#0.7#first#second#third") {
+        return "fail2: ${sideEffects}"
+    }
+    if (parentSideEffects != "1#4#3") {
+        return "fail3: ${parentSideEffects}"
+    }
+    sideEffects = ""
+    parentSideEffects = ""
+    val a2 = A(123).toString()
+    if (a2 != "123#int#130#parentCaptured") {
+        return "fail1: $a2"
+    }
+    if (sideEffects != "minus-one#zero#0.5#first#second#fourth") {
+        return "fail4: ${sideEffects}"
+    }
+    if (parentSideEffects != "1#4#parentCaptured") {
+        return "fail5: ${parentSideEffects}"
+    }
+    sideEffects = ""
+    parentSideEffects = ""
+    val a3 = A().toString()
+    if (a3 != "7#int#14#parentCaptured") {
+        return "fail6: $a3"
+    }
+    if (sideEffects != "minus-one#zero#0.5#first#second#fourth#fifth") {
+        return "fail7: ${sideEffects}"
+    }
+    if (parentSideEffects != "1#4#parentCaptured") {
+        return "fail8: ${parentSideEffects}"
+    }
+    return "OK"
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption = Результат применения разработанного алгоритма редукции к файлу localClasses.kt-384517712inheritance.kt]
+open class C(grandParentProp: String)
+
+fun box() {
+    val justForUsageInParentClosure = "parentCaptured"
+
+    class B : C {
+        val B.parentProp: String
+
+        constructor(arg1: Int, arg2: Int) : super(justForUsageInParentClosure) {
+            parentProp = arg1.toString()
+        }
+    }
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption = Исходный код компиляторного теста safeCallWithElvis.kt-175330980.kt]
+import kotlin.test.assertEquals
+class A(val x : Int, val y : A?)
+fun check(a: (A)?): Int {
+    return a?.y?.x ?: (a?.x ?: 3)
+}
+fun checkLeftAssoc(a: (A)?): Int {
+    ((return(a?.y?.x ?: (when {
+        (a?.x) != null -> (a?.x)
+        else -> (a?.x)
+    }))) ?: (return(a?.y?.x ?: (when {
+        (a?.x) != null -> (a?.x)
+        else -> (a?.x)
+    })))) ?: 3
+}
+fun box(): String {
+    val a1 = A(2, A(1, null))
+    val a2 = A(2, null)
+    val a3 = null
+    assertEquals(1, check(a1))
+    assertEquals(2, check(a2))
+    assertEquals(3, check(a3))
+    assertEquals(1, checkLeftAssoc(a1))
+    assertEquals(2, checkLeftAssoc(a2))
+    assertEquals(3, checkLeftAssoc(a3))
+    return "OK"
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption = Результат применения разработанного алгоритма редукции к файлу safeCallWithElvis.kt-175330980.kt]
+class A(val x: Int)
+
+fun checkLeftAssoc(a: A?): Int {
+    return (a?.x ?: (when {
+        else -> a?.x
+    }))
+}
+\end{lstlisting}
