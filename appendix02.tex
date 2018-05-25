@@ -9,7 +9,7 @@ import com.intellij.psi.PsiWhiteSpace
 import com.stepanov.reduktor.util.*
 import org.apache.log4j.Logger
 
-class HierarchicalDeltaDebugger(_tree: FileASTNode, private val checker: CompilatorCrushingTestChecker) {
+class HierarchicalDeltaDebugger(private val tree: FileASTNode, private val checker: CompilatorCrushingTestChecker) {
 
     fun hdd(maxLevel: Int = Int.MAX_VALUE) {
         log.debug("Starting to reduce ${tree.text}")
@@ -27,27 +27,6 @@ class HierarchicalDeltaDebugger(_tree: FileASTNode, private val checker: Compila
         }
         log.debug("Result: ${tree.text}")
     }
-
-    fun hdd(redNode: ASTNode, maxLevel: Int = Int.MAX_VALUE) {
-        //Calculate new level
-        var localLevel = 1
-        level = redNode.getAllParents().size
-        log.debug("Starting to reduce ${tree.text}")
-        var nodes = redNode.getAllChildrenOfCurLevel().toList()
-        while (nodes.isNotEmpty() || level > maxLevel) {
-            log.debug("Cur level is $level \n")
-            val minconfig = ddmin(nodes)
-            log.debug("MINCONFIG = ${minconfig.map { it }}")
-            deleteNodes(tree, minconfig, level, nodes)
-            log.debug("VERIFY LEVEL $level = ${checker.checkTest(tree.text)}")
-            ++level
-            ++localLevel
-            nodes = redNode.getAllChildrenOfTheLevel(localLevel)
-            log.debug("RES after level $level: ${tree.text}")
-        }
-        log.debug("Result: ${tree.text}")
-    }
-
 
     private fun deleteNodes(tree: FileASTNode, minconf: List<ASTNode>, level: Int): FileASTNode {
         val child = tree.getAllChildrenOfTheLevel(level)
@@ -121,7 +100,7 @@ class HierarchicalDeltaDebugger(_tree: FileASTNode, private val checker: Compila
                 if (tree.size == 1)
                     return tree
                 else
-                    return ddmin_(sub/*.filterRowPsiWhiteSpaces()*/, 2)
+                    return ddmin_(sub, 2)
             }
         }
         //Try to check completeness of subsets
@@ -129,17 +108,13 @@ class HierarchicalDeltaDebugger(_tree: FileASTNode, private val checker: Compila
             val completeness = getCompleteness(subList)
             for (com in completeness) {
                 if (checker.checkTest(getCopyWithDeletingNodes(true, com, tree).text)) {
-                    /* DD_MIN(_, max(n - 1, 2)*/
                     return ddmin_(com, maxOf(n - 1, 2))
-                    //return ddmin_(com.filterRowPsiWhiteSpaces(), n - 1)
                 }
             }
         }
         //Increase the granularity
         if (step != 1)
-        /* ddmin_(_, min(2*n, |Cx|) */
             return ddmin_(tree, minOf(2 * n, tree.size))
-        //return ddmin_(tree, 2 * n)
         return tree
     }
 
@@ -147,7 +122,6 @@ class HierarchicalDeltaDebugger(_tree: FileASTNode, private val checker: Compila
         return ddmin_(tree, 2)
     }
 
-    var tree = _tree
     var level = 1
 
     private val log = Logger.getLogger("reducerLogger")

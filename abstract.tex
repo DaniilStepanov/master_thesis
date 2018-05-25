@@ -7,24 +7,24 @@
 }
 
 \abstractcontent{
-Одной из основых проблем методов обеспечения качества программного обеспечения является локализация найденных в нем ошибок. Этот процесс в настоящее производится вручную, что зачастую приводит к большим временным затратам. В данной работе был предложен подход к решению этой проблемы --- метод автоматической программной редукции.
+Одной из основных проблем обеспечения качества программного обеспечения является локализация найденных в нем ошибок. Этот процесс в настоящее время производится вручную, что зачастую приводит к большим временным затратам. В данной работе предлагается подход к решению этой проблемы --- метод автоматической программной редукции.
 
-Метод разрабатывался для популярного языка программирования Kotlin. Основой предложенного метода является комбинирование существующих технологий программной редукции и специфичных трансформаций для целевого языка программирования над различными видами представления программы. В работе представлено описание всех применяемых технологий и трансформаций, которые запускаются в определенном порядке до того момента, как тестовый пример, приводящий к программному сбою, не перестанет изменяться. 
+Метод разрабатывался для языка программирования Kotlin. Основой предложенного метода является комбинирование существующих технологий программной редукции и трансформаций для целевого языка программирования над различными видами представления программы. В работе описываются все применяемые методы и трансформации. 
 
-На базе технологии разработан прототип для редукции тестов, приводяших к ошибке компилятора языка Kotlin. Полученные результаты показывают целесообразность применения технологии для задач программной редукции. Описанная технология может применяться в процессе разработки программного обеспечения для сокращения временных затрат на локализацию найденных ошибок, если причина их происхождения не очевидна. 
+На базе метода разработан прототип для редукции тестов, приводящих к сбоям компилятора языка Kotlin. Полученные результаты показывают целесообразность применения технологии для задач программной редукции. Описанная технология может использоваться в процессе разработки программного обеспечения для сокращения временных затрат на локализацию найденных ошибок, если причина их происхождения не очевидна. 
 }
 
 \keywordsen{
-  code reducing,
-  bugs localization,
+  code reduction,
+  bug localization,
   software quality,
   software testing
 }
 
 \abstractcontenten{
-  One of the biggest problem of software quality assurance methods is the bugs localization. This process currently done by hands, which often leads to large time costs. In this paper we proposed an approach to solving this problem --- the method of automatic software reduction.
+  One of the biggest problem of software quality assurance is bug localization. This process is usually done manually, which often leads to significant time spendings. In this thesis we propose an approach to this problem via automatic software reduction.
 
-  The method was developed for the popular programming language Kotlin. The basis of the proposed method is the combination of existing technologies of software reduction and specific transformations for the target programming language over various types of program representation. This paper describes all the technologies and transformations that are used, which are launching in a certain order until the test sample stops changing.
+  We target Kotlin programming language. The basis of our solution is a combination of existing software reduction techniques and Kotlin-specific transformations implemented over various program representation. This paper describes all the methods and transformations we used in our approach.
   
-  Based on the technology, a prototype was developed to reduce the tests that leads to Kotlin compiler error. The obtained results show the expediency of using the technology for software reduction problems. The described technology can be used in the development of software to reduce the time spent on localizing found errors, if the cause of their source is not obvious.
+  We implemented a prototype aimed at reduction of tests which cause Kotlin compiler errors and crashes. The evaluation results show the usability of our approach to software reduction problems --- it may be used in your everyday software development to reduce the time spent on localizing errors, if their source is not obvious.
 }

@@ -69,19 +69,22 @@
   \masterproglabel\ \@masterprognum\ --\ \@masterprog%
 \end{flushleft}
 %
-\vskip\fifthskip
+\vskip5ex
 \begin{tabbing}
   \studentlabel\=\makebox[\fieldhshift][l]{\hrulefill\ \@author}\\[\sixthskip]
   \ifx\@sa\empty\else\diplomafield{sa}\\[\sixthskip]\fi
   \ifx\@sasnd\empty\else\diplomafield{sasnd}\\[\sixthskip]\fi
   \ifx\@rev\empty\else\diplomafield{rev}\\[\sixthskip]\fi
   \ifx\@revsnd\empty\else\diplomafield{revsnd}\\[\sixthskip]\fi
+  \ifx\@scon\empty\else\diplomafield{scon}\\[9pt]\fi
+  \ifx\@sconsnd\empty\else\diplomafield{sconsnd}\fi
   \ifx\@con\empty\else\diplomafield{con}\\[9pt]\fi
   \ifx\@consnd\empty\else\diplomafield{consnd}\fi
 \end{tabbing}
 \vfill
 \begin{center}
-  {\@city\cdsep\@date}
+  \@city\\
+  \@date
 \end{center}
 \normalfont\clearpage
 }\fi
@@ -160,7 +163,8 @@
 \end{flushright}
 \vfill
 \begin{center}
-  {\@city\cdsep\@date}
+  \@city\\
+  \@date
 \end{center}
 \normalfont\clearpage
 %
