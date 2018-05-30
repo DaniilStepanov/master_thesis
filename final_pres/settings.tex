@@ -1,0 +1,107 @@
+\documentclass[11pt,pdf,hyperref={unicode},aspectratio=43]{beamer}
+
+% подключаем кириллицу 
+\usepackage[utf8]{inputenc}
+\usepackage[russian]{babel}
+
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+%листинг кода
+\usepackage{multicol}
+\setlength\columnsep{25pt}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{graphicx,subcaption}
+
+\usepackage{listingsutf8}
+
+\usepackage{adjustbox}
+
+\usepackage{svg}
+\setsvg{inkscape = inkscape -z -D}
+
+\lstdefinelanguage{Kotlin}{
+  keywords={package, as, as?, typealias, this, super, val, var, fun, for, null, true, false, is, in, throw, return, break, continue, object, if, try, else, while, do, when, class, interface, enum, object, companion, override, public, private, get, set, import, abstract, vararg, expect, actual, where, suspend, data, internal, dynamic, final, by},
+  keywordstyle=\color{NavyBlue}\bfseries,
+  ndkeywords={@Deprecated, @JvmName, @JvmStatic, @JvmOverloads, @JvmField, @JvmSynthetic, Iterable, Int, Long, Integer, Short, Byte, Float, Double, String, Runnable, Array},
+  ndkeywordstyle=\color{BurntOrange}\bfseries,
+  emph={println, return@, forEach, map, mapNotNull, first, filter, firstOrNull, lazy, delegate},
+  emphstyle={\color{OrangeRed}},
+  identifierstyle=\color{black},
+  sensitive=true,
+  commentstyle=\color{gray}\ttfamily,
+  comment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  stringstyle=\color{ForestGreen}\ttfamily,
+  morestring=[b]",
+  morestring=[s]{"""*}{*"""},
+}
+
+\lstdefinestyle{kotlin}{
+	breaklines={true},
+	texcl=true,
+	language={Kotlin},
+}
+
+\lstdefinestyle{base_listing}{
+  extendedchars     = {true},
+  inputencoding     = {utf8}, 
+  basicstyle        = {\ttfamily \tiny},
+  keywordstyle      = {\rmfamily \bfseries},
+  commentstyle      = {\rmfamily \itshape},
+  tabsize           = {2},
+  flexiblecolumns   = {false},
+  frame             = {single},
+  showstringspaces  = {false},
+  breaklines        = {true}, 
+  breakatwhitespace = {true}
+}
+
+\lstdefinelanguage{LLVM-asm}
+{
+  morekeywords = {
+    load, store, malloc, alloca, free, getelementptr,
+    add, sub, insertvalue, extractvalue, icmp, call,
+    define, void, global, ret, common
+  },
+  sensitive   = false,
+  morecomment = [l]{;}
+}
+
+\lstdefinelanguage{PS}
+{
+  morekeywords = {
+    true, false, <nullptr>
+  },
+  basicstyle        = {\ttfamily \scriptsize},
+  sensitive    = true,
+  morecomment  = [l]{---}
+}
+
+\lstdefinestyle{crs_llvm}{
+  style    = {base_listing},
+  language = {LLVM-asm}
+}
+
+\lstdefinestyle{crs_cpp}{
+  style    = {base_listing},
+  language = {C++}
+}
+
+% отключить клавиши навигации
+\setbeamertemplate{navigation symbols}{
+    \insertframenumber\,/\,\inserttotalframenumber
+}
+
+
+% тема оформления
+\usetheme{metropolis}
+
+% цветовая схема
+\usecolortheme{default}
+
+\setbeamercovered{transparent}
+
+\beamersetuncovermixins{\opaqueness<1>{25}}{\opaqueness<2->{15}}
+
